@@ -1,8 +1,8 @@
 all: main.c
-	avr-gcc -mmcu=atmega128p -Os -DF_CPU=16000000 main.c
-	avr-objcopy a.out
+	avr-gcc -mmcu=atmega128 -Os -DF_CPU=16000000 main.c
+	avr-objcopy -O ihex a.out a.hex
 
 install: a.out
-	avrdude -p m128p -c jtagmkI -P /dev/ttyUSB0 -b 38400 -P COM5 -U flash:w:a.out
+	avrdude -p m128 -c jtagmkI -P /dev/ttyUSB0 -b 9600 -U flash:w:a.hex
 
 clean:
