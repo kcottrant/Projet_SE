@@ -4,35 +4,32 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define FOSC 1843200// Clock Speed
-#define BAUD 9600
+//#define FOSC 1843200// Clock Speed
+#define FOSC 13000000// Clock Speed
+//1843200
+#define BAUD 38400
 #define MYUBRR FOSC/16/BAUD-1
 
-void JTAG_Init()
+void SPI_MasterInit(void)
 {
-    /* Set baud rate
-    UBRR0H = (unsigned char)(ubrr>>8);
-    UBRR0L = (unsigned char)ubrr;
-    UCSR0A = 1<<U2X0;
-    /* Enable receiver and transmitter
-    UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-    /* Set frame format: 8data, 2stop bit
-    UCSR0C = (3<<UCSZ00);
-    */
+    /* Set MOSI and SCK output, all others input */
+  DDRB = (1<<DDB2)|(1<<DDB1);
+  //enable OE
+  DDRE |= _BV(PE4);
+  //enable pour LE
+  DDRE |= _BV(PE5);
 
-    // Enable JTAG
-    MCUCSR= 1<<JTD;
-    // RESET AVR_RESET
-    //AVR_RESET |=_BV(PC6)
+  /* Enable SPI, Master, set clock rate fck/16 */
+  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
 }
 
-void JTAG_Transmit(unsigned char data )
+void SPI_MasterTransmit(char cData)
 {
-    /* Wait for empty transmit buffer
-    while ( !( UCSR0A & (1<<UDRE0)) );
-    /* Put data into buffer, sends the data
-    UDR0 = data;
-     */
+    /* Start transmission */
+  SPDR = cData;
+  /* Wait for transmission complete */
+  while(!(SPSR & (1<<SPIF)))
+  ;
 }
 
 void USART_Init( unsigned int ubrr )
@@ -57,21 +54,41 @@ void USART_Transmit( unsigned char data )
 
 int main() {
 
-
-
-/*  while(1){
-    printf("%s\n", "hello");
-
-  }*/
-
   // Paramètre en sortie
-  //RXD |= _BV(PE0);
+  //RXD |= _BV(PD0);
   // Définit la broche à "High"
-  //TXD |= _BV(PE1);
+  //TXD |= _BV(PD1);
+  char byte1 = 0xaa; //00110000;
+  char byte2 = 0xaa; //00100000;
 
   USART_Init(MYUBRR);
+  USART_Transmit('b');
+  SPI_MasterInit();
 
-  char hello[128];
+  // OFF pour LE
+//  PORTE &=~ _BV(PE5); --> merde qd pas en commentaire
+    // ON envoie au OE
+  PORTE |= _BV(PE4);
+
+while(1){
+//_delay_ms(5);
+  //on OE
+  // DDRE |= _BV(PE4);
+    SPI_MasterTransmit(byte1);
+    SPI_MasterTransmit(byte2);
+//  _delay_ms(100);
+    //on OE
+  //  DDRE &=~ _BV(PE4);
+  //   ON pour LE
+    PORTE |= _BV(PE5);
+  // OFF pour LE
+    PORTE &=~ _BV(PE5);
+    // OFF envoie au OE
+    PORTE &=~ _BV(PE4);
+    // ON envoie au OE
+    PORTE |= _BV(PE4);
+}
+  /*char hello[128];
   int sizeHello = sprintf(hello, "Hello World!\n\r");
   char bye[128];
   int sizeBye = sprintf(bye, "Bye bye!\n\r");
@@ -91,5 +108,5 @@ int main() {
 
       for(i = 0; i < sizeHello; i++)
           USART_Transmit(hello[i]);
-  }
+  }*/
 }
