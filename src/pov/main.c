@@ -2,144 +2,96 @@
 // registres
 #include <stdio.h>
 #include <avr/io.h>
-//#include <util/delay.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
 
-#define FOSC 13000000// Clock Speed
-#define BAUD 38400
-#define MYUBRR FOSC/16/BAUD-1
+#include "spi.h"
+#include "usart.h"
 
-void SPI_MasterInit(void)
+// interruption pour l'envoie de commandes USART 
+
+ISR(USART0_RX_vect)
 {
-  /* Set MOSI and SCK output, all others input */
-  DDRB = (1<<DDB2)|(1<<DDB1);
-  //enable OE
-  DDRE |= _BV(PE4);
-  //enable pour LE
-  DDRE |= _BV(PE5);
-  // enable port SS
-  DDRB |= _BV(PB0);
-  /* Enable SPI, Master, set clock rate fck/16, enable interuption*/
-  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
-  //SPSR |= (1<<SPI2X);
-  /* enable global interuption*/
-  //unsigned char p=0x80;
-  //SREG |= p;
-  //__enable_interrupt(); /* set global interrupt enable */
-  //sei();
+  unsigned char data;
+  //Read the received data 
+  data = UDR0;
+  USART_Transmit(data);
 }
 
-void SPI_MasterTransmit(char cData)
+void InitEffetHall(void)
 {
-    /* Start transmission */
-  SPDR = cData;
-  /* Wait for transmission complete */
-  while(!(SPSR & (1<<SPIF)));
+  EIMSK &=~_BV(INT0);
+  EICRA &=~ _BV(ISC00);
+  EICRA |= _BV(ISC01);
+  EIMSK |=_BV(INT0);
 }
 
-void USART_Init( unsigned int ubrr )
+ISR(INT0_vect)
 {
-  /* Set baud rate */
-  UBRR0H = (unsigned char)(ubrr>>8);
-  UBRR0L = (unsigned char)ubrr;
-  UCSR0C = (1<<USBS)|(3<<UCSZ0);
+   USART_Transmit('a');
 }
 
-void USART_Transmit( unsigned char data )
-{
-/* Wait for empty transmit buffer */
-  while ( !( UCSR0A & (1<<UDRE0)) )
-  ;
-  /* Put data into buffer, sends the data */
-  UDR0 = data;
-}
-
-unsigned char USART_Receive( void )
-{
-/* Wait for data to be received */
-while ( !(UCSR0A & (1<<RXC0)) );
-/* Get and return received data from buffer */
-return UDR0;
-}
-
-/*void allumeLed(char chiffre1, char chiffre2)
-{
-  SPI_MasterTransmit(chiffre1);
-  SPI_MasterTransmit(chiffre2);
-
-  PORTE |= _BV(PE5);
-  // OFF pour LE
-  PORTE &=~ _BV(PE5);
-    // OFF envoie au OE
-  PORTE &=~ _BV(PE4);
-  // ON envoie au OE A DECOMMENTER SI ON VEUT PLEINE PUISSANCE
-  //_delay_ms(1000);
-  PORTE |= _BV(PE4);
-
-}*/
 
 int main() {
-
-
-//  char byte1 = 0xaa; //00110000;
-//  char byte2 = 0xaa; //00100000;
-  char zero =0x00;
-  char un = 0x01;
-  char deux = 0x02;
+  sei();
   // Lecture et écriture
-  //USART_Init(MYUBRR);
-  //USART_Transmit(USART_Receive());
+  USART_Init(MYUBRR);
+  //USART_Transmit('b');
+  InitEffetHall();
   // Connexion SPI (communication avec les LED)
   SPI_MasterInit();
-  // OFF pour LE
-  /*PORTE &=~ _BV(PE5);
-  // ON envoie au OE
-  PORTE |= _BV(PE4);
-  while(1){
-    SPI_MasterTransmit(zero);
-    SPI_MasterTransmit(un);
 
-    PORTE |= _BV(PE5);
-    // OFF pour LE
-    PORTE &=~ _BV(PE5);
-      // OFF envoie au OE
-    PORTE &=~ _BV(PE4);
-    // ON envoie au OE A DECOMMENTER SI ON VEUT PLEINE PUISSANCE
-    //_delay_ms(1000);
-    PORTE |= _BV(PE4);
-  }*/
+  volatile uint16_t i=1;
 
-
-  // OFF pour LE
-  PORTE &=~ _BV(PE5);
-  // ON envoie au OE
-  PORTE |= _BV(PE4);
-  while(1){
-    SPI_MasterTransmit(deux);
-    SPI_MasterTransmit(deux);
-
-    PORTE |= _BV(PE5);
-    // OFF pour LE
-    PORTE &=~ _BV(PE5);
-      // OFF envoie au OE
-    PORTE &=~ _BV(PE4);
-    // ON envoie au OE A DECOMMENTER SI ON VEUT PLEINE PUISSANCE
-    //_delay_ms(1000);
-    PORTE |= _BV(PE4);
-  }
-
-
-/*
-    // Effet Hall
-      while(1){
-        unsigned char p = 0x01;
-        p &= PIND;
-        if(p == 0x0){
-          USART_Transmit('g');
-        }
-        if(p == 0x01){
-          USART_Transmit('c');
-        }
-        _delay_ms(10000000000000);
+  while (i<=32768)
+    {
+      allumeLed(i);
+      _delay_ms(400);
+      if(i>=32768)
+      {
+	i=1;
+	allumeLed(1);
+	_delay_ms(400);
       }
-*/
+      i=i*2;
+    }
+
+  // code ROMAIN
+  /*
+
+  	//attendre 3s, histoire que le moteur est en vitesse de croisière
+	_delay(3000);
+	//mesure vitesse pour commencer
+	vitesse_angulaire_reele=measure_angular_speed();
+	
+	NB_TICKS_REMAIN= (1/6*vitesse_angulaire_reele - 256*(1/13000000))/(1/13000000); // ordre de grandeur = 225
+	
+    
+	if( capteur effet hall detecte qqch)
+		theta_real=0;
+	
+
+	// initialize timer
+    timer0_init();
+  
+    // loop forever
+    while(1)
+    {
+        // check if no. of overflows = 1
+        if (tot_overflow_timr0 >= 1 )  // NOTE: '>=' is used
+        {
+            // check if the timer count reaches NB_TICKS_REMAIN -> dépendance de la vitesse réelle: NB_TICKS_REMAIN(vitesse_angulaire_reele)
+            if (TCNT0 >= NB_TICKS_REMAIN)
+            {
+                TCNT0 = 0;            // reset counter
+                tot_overflow_timr0 = 0;     // reset overflow counter
+				theta_real++;
+            }
+		}
+		//transmit ORDERs via SPI to driver
+		transmit4displayLED(theta_real, t_en_s, t_en_min, t_en_h);
+	}
+    */
 }
+
+

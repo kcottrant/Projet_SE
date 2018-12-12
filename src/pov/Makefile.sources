@@ -1,1 +1,1 @@
-SOURCES := main.c
+SOURCES := main.c spi.c usart.c display.c

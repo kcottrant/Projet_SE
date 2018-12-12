@@ -1,0 +1,47 @@
+#include "spi.h"
+void SPI_MasterInit(void)
+{
+  /* Set MOSI and SCK output, all others input */
+  DDRB = (1<<DDB2)|(1<<DDB1);
+  //enable OE
+  DDRE |= _BV(PE4);
+  //enable pour LE
+  DDRE |= _BV(PE5);
+  // enable port SS
+  DDRB |= _BV(PB0);
+  /* Enable SPI, Master, set clock rate fck/16, enable interuption*/
+  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//|(0 << SPIE);
+ /* set global interrupt enable */
+  /* enable global interuption*/
+  //SPSR |= _BV(SPIF);
+  // unsigned char p=0x80;
+  // SREG |= p;
+}
+
+void SPI_MasterTransmit(uint8_t cData)
+{
+  /* Start transmission */
+  SPDR = cData;
+  /* Wait for transmission complete */
+  while(!(SPSR & (1<<SPIF)));
+}
+
+
+void allumeLed(uint16_t chiffre)
+{
+  uint8_t trame1= chiffre>>8;
+  uint8_t trame2 = chiffre;
+  PORTE |= _BV(PE4);
+  PORTE &=~ _BV(PE5);
+  
+  SPI_MasterTransmit(trame1);
+  SPI_MasterTransmit(trame2);
+  PORTE |= _BV(PE5);
+  // OFF pour LE
+  //PORTE &=~ _BV(PE5);
+  // OFF envoie au OE
+  PORTE &=~ _BV(PE4);
+  // ON envoie au OE A DECOMMENTER SI ON VEUT PLEINE PUISSANCE
+  //PORTE |= _BV(PE4);
+
+}
