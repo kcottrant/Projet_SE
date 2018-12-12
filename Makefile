@@ -59,7 +59,7 @@ sendu:
 	avrdude -c arduino -p $(MCU_TARGET) -P /dev/ttyUSB0 -U flash:w:build/flash.bin:r
 
 sendj:
-	avrdude -B 38400 -V -F -c jtagmkI -p $(MCU_TARGET) -P /dev/ttyUSB0 -U flash:w:build/flash.bin:r
+	avrdude -B 9600 -V -F -c jtagmkI -p $(MCU_TARGET) -P /dev/ttyUSB0 -U flash:w:build/flash.bin:r
 
 send:
 	avrdude -c arduino -p $(MCU_TARGET) -P /dev/ttyACM0 -U flash:w:build/flash.bin:r
