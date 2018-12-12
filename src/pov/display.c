@@ -20,6 +20,7 @@
 // global variable to count the real time actual theta
 volatile uint8_t theta_real;
 volatile uint8_t tot_overflow_timr0;
+volatile int NB_TICKS_REMAIN;
 
 volatile int t_50ms;
 volatile int t_en_s;
@@ -79,8 +80,8 @@ void transmit4displayLED(int theta, int sec, int min, int hour){
 	if( 0 <= theta <= theta_sec_timer){
 		valeur_trans |= aiguilles[4];
 	}
-	if((theta != 0) || (theta != 22.5) || (theta != 45) || (theta != 67.5) || (theta != 90) || (theta != 112.5) || (theta != 135)  || (theta != 157.5)  || (theta != 180)  || (theta != 202.5)  || (theta != 225)  || (theta != 247.5)  || (theta != 270)  || (theta != 292.5)  || (theta != 315)  || (theta != 337.5)  || (theta != 360)){
-		valeur_trans |= aiguilles[5];
+	if((theta == 0) || (theta == 22.5) || (theta == 45) || (theta == 67.5) || (theta == 90) || (theta == 112.5) || (theta == 135)  || (theta == 157.5)  || (theta == 180)  || (theta == 202.5)  || (theta == 225)  || (theta == 247.5)  || (theta == 270)  || (theta == 292.5)  || (theta == 315)  || (theta == 337.5)  || (theta == 360)){
+		valeur_trans |= ((valeur_trans & aiguilles[4]) >> 1) ^ aiguilles[5];
 	}
 	if((theta == 0) || (theta == 90) || (theta == 180) || (theta == 270) || (theta == 360)){
 		valeur_trans |= aiguilles[3];
@@ -105,23 +106,10 @@ ISR(TIMER0_OVF_vect)
 }
 
 
-void timer0_init(float v_ang)
+void timer0_init()
 {
     // set up timer with prescaler  
-	if()
-		TCCR0 |= (1 << CS00);	// no prescaler
-	if else()
-		TCCR0 |= (1 << CS01);	//prescaler=8
-	if else()
-		TCCR0 |= (1 << CS01)|(1 << CS00);	//prescaler=32
-	if else()
-		TCCR0 |= (1 << CS02);	//prescaler=64
-	if else()
-		TCCR0 |= (1 << CS02)|(1 << CS00);	//prescaler=128
-	if else()
-		TCCR0 |= (1 << CS02)|(1 << CS01);	//prescaler=256
-	else
-		TCCR0 |= (1 << CS02)|(1 << CS01)|(1 << CS00);	//prescaler=1024
+	TCCR0 |= (1 << CS00);	// no prescaler
 	
     // initialize counter
     TCNT0 = 0;
@@ -142,25 +130,27 @@ int main(void)
 	//mesure vitesse pour commencer
 	vitesse_angulaire_reele=measure_angular_speed();
 	
+	NB_TICKS_REMAIN= (1/6*vitesse_angulaire_reele - 256*(1/13000000))/(1/13000000); // ordre de grandeur = 225
+	
     /*
 	if( capteur effet hall detecte qqch)
 		theta_real=0;
 	*/
 
 	// initialize timer
-    timer0_init(vitesse_angulaire_reele);
+    timer0_init();
   
     // loop forever
     while(1)
     {
-        // check if no. of overflows = XXXX
-        if (tot_overflow_timr0 >= XXXX )  // NOTE: '>=' is used
+        // check if no. of overflows = 1
+        if (tot_overflow_timr0 >= 1 )  // NOTE: '>=' is used
         {
-            // check if the timer count reaches YYYY
-            if (TCNT0 >= YYYY)
+            // check if the timer count reaches NB_TICKS_REMAIN -> dépendance de la vitesse réelle: NB_TICKS_REMAIN(vitesse_angulaire_reele)
+            if (TCNT0 >= NB_TICKS_REMAIN)
             {
                 TCNT0 = 0;            // reset counter
-                tot_overflow = 0;     // reset overflow counter
+                tot_overflow_timr0 = 0;     // reset overflow counter
 				theta_real++;
             }
 		}
