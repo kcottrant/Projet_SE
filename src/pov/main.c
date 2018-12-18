@@ -13,9 +13,9 @@
 
 volatile uint8_t compteur_timer; // compte le nombre d'overflow
 
-volatile uint8_t compteur_h=18; 
-volatile uint8_t compteur_min=29;
-volatile uint8_t compteur_sec=4;
+volatile uint8_t compteur_h=4; 
+volatile uint8_t compteur_min=57;
+volatile uint8_t compteur_sec=0;
 
 volatile uint16_t vitesse=0; // vitesse moyenne de rotation
 volatile uint16_t time1=0; // temps premier tour

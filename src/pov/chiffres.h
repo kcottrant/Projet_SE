@@ -5,13 +5,13 @@
 #include <stdlib.h>
 
 void Affichezero(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Afficheun(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichedeux(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichetrois(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichequatre(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichecinq(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichesix(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
-void Affichesept(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
+void Afficheun(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichedeux(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichetrois(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichequatre(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichecinq(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichesix(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
+void Affichesept(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
 void Affichehuit(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes);
 void Afficheneuf(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas);
 void AfficheHeures(uint8_t heures,uint8_t secondes,uint8_t numero_cadran);
