@@ -29,6 +29,16 @@ void USART_Transmit( unsigned char data )
 
 }
 
+void USART_puts(unsigned char *data)
+{
+    int k = 0;
+
+    while (data[k] != '\0') {
+        USART_Transmit(data[k]);
+        k++;
+    }
+}
+
 unsigned char USART_Receive( void )
 {
   /* Wait for data to be received */
