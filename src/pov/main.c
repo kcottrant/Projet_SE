@@ -10,6 +10,7 @@
 #include "usart.h"
 #include "display.h"
 #include "chiffres.h"
+#include "chiffresDroits.h"
 
 volatile uint8_t compteur_timer; // compte le nombre d'overflow
 
@@ -206,12 +207,12 @@ int main() {
   USART_Transmit('g');
 
   // Mode aiguilles activé
-  // aiguilles();
-  while(1)
+   aiguilles();
+  /*  while(1)
   {
     AfficheHeures(compteur_h,compteur_sec,numero_cadran);
     AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
-  }
+    }*/
 }
 
 
