@@ -1,5 +1,6 @@
 #include "chiffresDroits.h"
 #include "spi.h"
+#include "usart.h"
 
 
 // on fait un tableau de cosinus et de sinus pour chaque LED
@@ -34,7 +35,6 @@ uint16_t tab3posy[16]={79,109,138,168,196,226,256,285,314,344,373,403,432,461,49
 uint16_t tab4posy[16]={74,108,128,155,182,210,237,264,291,319,346,373,400,428,455,482};
 uint16_t tab5posy[16]={68,93,118,143,168,193,218,243,268,293,318,343,368,393,418,443};
 uint16_t tab6posy[16]={61,84,107,129,152,175,197,220,243,265,288,311,334,356,379,402};
-
 uint16_t tab7posy[16]={55,75,96,116,136,157,177,197,218,238,258,275,299,319,340,360};
 uint16_t tab8posy[16]={48,66,84,102,120,138,156,174,192,201,228,245,263,281,299,317};
 uint16_t tab9posy[16]={42,57,73,88,104,118,134,150,165,181,196,212,227,243,258,273};
@@ -45,107 +45,144 @@ uint16_t tab13posy[16]={14,19,25,30,35,40,45,51,56,61,66,72,77,82,87,93};
 uint16_t tab14posy[16]={7,10,12,15,18,20,23,25,28,31,33,36,38,41,44,46};
 uint16_t tab15posy[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-
+// definition des chiffres
 uint16_t tabchiffreunx[5] = {100,380,380,500,260};
 uint16_t tabchiffreuny[5] = {460,740,100,100,100};
-// definition des chiffres
 
-void chiffreun(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas)
+//affiche le chiffre un
+void chiffreun(uint8_t numero_cadran)
 {
   uint16_t taba[4];
   uint16_t tabb[4];
   for(int i=0;i<4;i++)
-    {
-      taba[i] = calculCoeffDirect(tabchiffreunx[i],tabchiffreunx[i+1],tabchiffreuny[i],tabchiffreuny[i+1]);
-      tabb[i] = calculOrdonOrigin(tabchiffreunx[i],tabchiffreuny[i],taba[i]);
-    }
+  {
+    taba[i] = calculCoeffDirect(tabchiffreunx[i],tabchiffreunx[i+1],tabchiffreuny[i],tabchiffreuny[i+1]);
+    tabb[i] = calculOrdonOrigin(tabchiffreunx[i],tabchiffreuny[i],taba[i]);
+  }
 
-  uint8_t ledsave[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  uint8_t led;
+  uint8_t led[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   
   // on parcourt pour chaque LED sa position pour un cadran donné
   for(int i=0;i<16;i++)
     {
-      //led={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+      for (int i =0;i<16;i++)
+	{
+	  led[i]=0;
+	}
       if(numero_cadran==0)
 	{
-	  
-	 
-	  
+	  //led[i]=calculLedAllume(taba, tabb,tab0posy[15-i], tab0posy[i]);
+	  //allumeLed(convertToDecimal(led));
+	  allumeLed(32768);
 	}
       else if(numero_cadran==1)
 	{
+	  calculLedAllume(taba, tabb,tab1posy[15-i], tab1posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==2)
 	{
+	  calculLedAllume(taba, tabb,tab2posy[15-i], tab2posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==3)
 	{
+	  calculLedAllume(taba, tabb,tab3posy[15-i], tab3posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==4)
 	{
+	  calculLedAllume(taba, tabb,tab4posy[15-i], tab4posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==5)
 	{
+	  calculLedAllume(taba, tabb,tab5posy[15-i], tab5posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==6)
 	{
+	  calculLedAllume(taba, tabb,tab6posy[15-i], tab6posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
-
       else if(numero_cadran==7)
 	{
+	  calculLedAllume(taba, tabb,tab7posy[15-i], tab7posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==8)
 	{
+	  calculLedAllume(taba, tabb,tab8posy[15-i], tab8posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==9)
 	{
+	  calculLedAllume(taba, tabb,tab9posy[15-i], tab9posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==10)
 	{
+	  calculLedAllume(taba, tabb,tab10posy[15-i], tab10posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==11)
 	{
+	  calculLedAllume(taba, tabb,tab11posy[15-i], tab11posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==12)
 	{
+	  calculLedAllume(taba, tabb,tab12posy[15-i], tab12posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
-
       else if(numero_cadran==13)
 	{
+	  calculLedAllume(taba, tabb,tab13posy[15-i], tab13posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
-
       else if(numero_cadran==14)
 	{
+	  calculLedAllume(taba, tabb,tab14posy[15-i], tab14posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
       else if(numero_cadran==15)
 	{
+	  calculLedAllume(taba, tabb,tab15posy[15-i], tab15posy[i]);
+	  allumeLed(convertToDecimal(led));
 	}
-    
     }
-      
 }
 
-void calculLedAllume(uint16_t tab[16],uint16_t taba[16],uint16_t tabb[16])
+//calcule si une led doit etre alumee ou non
+//pour cela, calcule si la position de la led se trouve sur une des droites que composent le chiffre
+// taba : tableau contenant tous les coeffs dirrecteur du chiffre
+// tabb : tableau contenant toutes les coordonnee a l'origine des droites du chiffre
+// posLed : la position de la led que l'on souhaite allumer ou eteindre
+uint8_t calculLedAllume(uint16_t taba[16],uint16_t tabb[16], uint16_t posLedx, uint16_t posLedy)
 {
   uint16_t ycalcule;
   for(int j=0;j<4;j++)
-	  {
-	    ycalcule = tab[15-i]*taba[j]+tabb[j];
-	    if(ycalcule == tab0posy[i])
-	    {
-	      led[i]=1;
-	    }
-	  }
+    {
+      ycalcule = posLedx*taba[j]+tabb[j];
+      if(ycalcule == posLedy)
+	{
+	  return 1;
+	}
+    }
+  return 0;
 }
 
-void misezero(uint16_t tab[16])
+//convertit en décimal un tableau de taille 16 remplis de 1 et de 0
+uint16_t convertToDecimal(uint8_t tabled[16])
 {
-  for (int =0;i<15;i++)
+  uint16_t decimal = 0;
+  for(uint8_t i = 0;i<16;i++)
     {
-      tab[i]=0;
+      decimal = decimal + (tabled[i]^(15-i));
     }
+  return decimal;
 }
+
 uint16_t calculCoeffDirect(uint16_t x1,uint8_t x2,uint16_t y1,uint16_t y2)
 {
   uint16_t a = (x1-x2)/(y1-y2);

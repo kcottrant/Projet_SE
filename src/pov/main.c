@@ -12,8 +12,9 @@
 #include "chiffres.h"
 #include "chiffresDroits.h"
 
-volatile uint8_t compteur_timer; // compte le nombre d'overflow
+volatile uint8_t compteur_timer; // compte le nombre d'overflow du timer 1, au bout de 5, une seconde s'est écoulee
 
+//compteurs pour l'heure qu'il est
 volatile uint8_t compteur_h=4; 
 volatile uint8_t compteur_min=57;
 volatile uint8_t compteur_sec=0;
@@ -67,6 +68,7 @@ ISR(USART0_RX_vect)
   }
 }
 
+//mode d'affichage aiguille
 void aiguilles(void){
   uint8_t heure12;
   while(1)
@@ -118,6 +120,7 @@ void aiguilles(void){
     }
   }
 }
+
 // TIMER0 overflow interrupt service routine
 // called whenever TCNT0 overflows
 // se produit 5 fois par seconde
@@ -160,6 +163,7 @@ ISR(TIMER3_COMPA_vect)
 
 }
 
+//Initialisation de l'effet hall
 void InitEffetHall(void)
 {
   EIMSK &=~_BV(INT0);
@@ -207,12 +211,16 @@ int main() {
   USART_Transmit('g');
 
   // Mode aiguilles activé
-   aiguilles();
+  //aiguilles();
   /*  while(1)
   {
     AfficheHeures(compteur_h,compteur_sec,numero_cadran);
     AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
     }*/
+  while(1)
+    {
+      chiffreun(numero_cadran);
+    }
 }
 
 
