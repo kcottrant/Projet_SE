@@ -20,7 +20,7 @@ add-src   = $(eval include src/$1/Makefile.sources); \
 
 $(foreach module,$(MODULES),$(call add-src,$(module)))
 
-override CFLAGS  := -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -Os
+override CFLAGS  := -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -Os -std=gnu99
 override LDFLAGS := -Wl,-Map,$(PRG).map
 
 vpath %.c $(SRC_DIR)
