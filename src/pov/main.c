@@ -212,7 +212,8 @@ int main() {
 
   // Mode aiguilles activé
   //aiguilles();
-  /*  while(1)
+  
+  /* while(1)
   {
     AfficheHeures(compteur_h,compteur_sec,numero_cadran);
     AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
