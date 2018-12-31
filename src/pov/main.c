@@ -220,8 +220,7 @@ int main() {
     }*/
   while(1)
     {
-      chiffreun(numero_cadran);
-      
+      afficheHeure(numero_cadran);    
       }
 }
 
