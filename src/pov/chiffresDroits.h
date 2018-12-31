@@ -4,7 +4,7 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-void afficheHeure(uint8_t numero_cadran);
+void afficheHeure(uint8_t numero_cadran,uint8_t heure,uint8_t minute);
 void chiffre(uint8_t chiffre,uint8_t quart);
 uint8_t calculLedAllume(int *taba,int *tabb, uint16_t posLedx, uint16_t posLedy,int16_t *tabchiffrex1,int16_t *tabchiffrex2 ,int16_t *tabchiffrey1, int16_t *tabchiffrey2, uint8_t *estNull, uint8_t tailleTabDroite,uint16_t moinsX, uint16_t moinsY);
 uint8_t miseAZeroPointeurs(uint8_t chiffre,int *ptaba, int *ptabb, uint8_t * pcoeffEstNull, int *ptabaSauv, int *ptabbSauv, uint8_t *pcoeffNullSauv);

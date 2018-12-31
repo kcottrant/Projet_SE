@@ -15,8 +15,8 @@
 volatile uint8_t compteur_timer; // compte le nombre d'overflow du timer 1, au bout de 5, une seconde s'est écoulee
 
 //compteurs pour l'heure qu'il est
-volatile uint8_t compteur_h=4; 
-volatile uint8_t compteur_min=57;
+volatile uint8_t compteur_h=12; 
+volatile uint8_t compteur_min=32;
 volatile uint8_t compteur_sec=0;
 
 volatile uint16_t vitesse=0; // vitesse moyenne de rotation
@@ -220,7 +220,7 @@ int main() {
     }*/
   while(1)
     {
-      afficheHeure(numero_cadran);    
+      afficheHeure(numero_cadran, compteur_h, compteur_min);    
       }
 }
 

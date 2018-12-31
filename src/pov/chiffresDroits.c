@@ -127,17 +127,37 @@ int16_t *pchiffrey2;
 int16_t *pchiffrey1neg;
 int16_t *pchiffrex2neg;
 int16_t *pchiffrey2neg;*/
-
-int j=0;
+   uint8_t heureDixaine=60;
+  uint8_t heureUnite=60;
+  uint8_t minuteDixaine=60;
+  uint8_t minuteUnite=60;
 
 uint16_t led[60];
 
-void afficheHeure(uint8_t numero_cadran)
+void afficheHeure(uint8_t numero_cadran,uint8_t heure,uint8_t minute)
 {
-  if(j==0)
+    if(heureDixaine!=heure/10)
     {
-      chiffre(2,3);
-      j++;
+      heureDixaine = heure/10;
+      char buffer[16];
+    sprintf(buffer,"%i \n\r",heureDixaine);
+    USART_puts(buffer);
+      chiffre(heureDixaine,3);
+    }
+  if(heureUnite!=heure%10)
+    {
+      heureUnite = heure%10;
+      chiffre(heureUnite,0);
+    }
+  if(minuteDixaine!=minute/10)
+    {
+      minuteDixaine = minute/10;
+      chiffre(minuteDixaine,2);
+    }
+  if(minuteUnite!=minute%10)
+    {
+      minuteUnite = minute%10;
+      chiffre(minuteUnite,1);
     }
   allumeLed(led[numero_cadran]);
 }
@@ -151,13 +171,13 @@ void chiffre(uint8_t chiffre,uint8_t quart)
   //int tabb[tailleTableau];
   //pointeur vers le debut des tableaux des droites
   int *ptabaSauvegarde =NULL;
-  ptabaSauvegarde = malloc(24*sizeof(int));
+  ptabaSauvegarde = malloc(37*sizeof(int));
   int *ptabbSauvegarde = NULL;
-  ptabbSauvegarde =  malloc(24*sizeof(int));
+  ptabbSauvegarde =  malloc(37*sizeof(int));
   //tableau contenant des 1 ou des 0 suivant si la droite est verticale ou non, donc suivant si le coeff directeur est infini ou non
   //uint8_t coeffEstNull[tailleTableau];
   uint8_t *pcoeffEstNullSauvegarde = NULL;
-  pcoeffEstNullSauvegarde = malloc(24*sizeof(uint8_t));
+  pcoeffEstNullSauvegarde = malloc(37*sizeof(uint8_t));
   //pointeurs vers les tableaux qui vont être modifiés au cours du programme pour parcourir le tableau
   int *ptaba = ptabaSauvegarde;
   int *ptabb = ptabbSauvegarde;
