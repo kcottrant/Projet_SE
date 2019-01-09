@@ -16,7 +16,7 @@ volatile uint8_t compteur_timer; // compte le nombre d'overflow du timer 1, au b
 
 //compteurs pour l'heure qu'il est
 volatile uint8_t compteur_h=12; 
-volatile uint8_t compteur_min=32;
+volatile uint8_t compteur_min=40;
 volatile uint8_t compteur_sec=0;
 
 volatile uint16_t vitesse=0; // vitesse moyenne de rotation
