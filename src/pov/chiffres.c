@@ -1,7 +1,7 @@
 #include "chiffres.h"
 #include "spi.h"
 
-// inverser 1,2,4,5,6,7
+// Affiche dans les bons cadrans les heures
 void AfficheHeures(uint8_t heures,uint8_t secondes,uint8_t numero_cadran)
 {
   if(heures/10 ==1)
@@ -51,6 +51,7 @@ void AfficheHeures(uint8_t heures,uint8_t secondes,uint8_t numero_cadran)
  
 }
 
+// Affiche dans les bons cadrans les minutes
 void AfficheMinutes(uint8_t minutes,uint8_t secondes,uint8_t numero_cadran)
 {
   if(minutes/10 ==0)
@@ -120,6 +121,8 @@ void AfficheMinutes(uint8_t minutes,uint8_t secondes,uint8_t numero_cadran)
     }
  
 }
+
+// les fonctions suivantes permettent d'afficher respectivement les chiffres de 0 à 9 dans le bon cadran
 
 void Afficheun(uint8_t cadrandesire,uint8_t numero_cadran,uint8_t secondes,uint8_t estbas)
 {

@@ -1,1 +1,1 @@
-SOURCES := main.c spi.c usart.c display.c chiffres.c chiffresDroits.c
+SOURCES := main.c spi.c usart.c timers.c chiffres.c chiffresDroits.c aiguilles.c

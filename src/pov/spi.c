@@ -11,11 +11,6 @@ void SPI_MasterInit(void)
   DDRB |= _BV(PB0);
   /* Enable SPI, Master, set clock rate fck/16, enable interuption*/
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);//|(0 << SPIE);
- /* set global interrupt enable */
-  /* enable global interuption*/
-  //SPSR |= _BV(SPIF);
-  // unsigned char p=0x80;
-  // SREG |= p;
 }
 
 void SPI_MasterTransmit(uint8_t cData)
@@ -26,7 +21,7 @@ void SPI_MasterTransmit(uint8_t cData)
   while(!(SPSR & (1<<SPIF)));
 }
 
-
+// allume les LED à partir d'un chiffre décimal
 void allumeLed(uint16_t chiffre)
 {
   uint8_t trame1= chiffre>>8;
@@ -37,11 +32,5 @@ void allumeLed(uint16_t chiffre)
   SPI_MasterTransmit(trame1);
   SPI_MasterTransmit(trame2);
   PORTE |= _BV(PE5);
-  // OFF pour LE
-  //PORTE &=~ _BV(PE5);
-  // OFF envoie au OE
   PORTE &=~ _BV(PE4);
-  // ON envoie au OE A DECOMMENTER SI ON VEUT PLEINE PUISSANCE
-  //PORTE |= _BV(PE4);
-
 }

@@ -8,26 +8,29 @@
 
 #include "spi.h"
 #include "usart.h"
-#include "display.h"
+#include "timers.h"
 #include "chiffres.h"
 #include "chiffresDroits.h"
+#include "aiguilles.h"
 
 volatile uint8_t compteur_timer; // compte le nombre d'overflow du timer 1, au bout de 5, une seconde s'est écoulee
 
 //compteurs pour l'heure qu'il est
-volatile uint8_t compteur_h=12; 
-volatile uint8_t compteur_min=40;
+volatile uint8_t compteur_h=03;
+volatile uint8_t compteur_min=45;
 volatile uint8_t compteur_sec=0;
 
 volatile uint16_t vitesse=0; // vitesse moyenne de rotation
 volatile uint16_t time1=0; // temps premier tour
 volatile uint16_t time2=0; // temps deuxième tour
-volatile uint8_t numero_cadran;
-volatile uint16_t leds;
+volatile uint8_t numero_cadran; // Cadran ou se trouve les LEDs 60 cadrans au total
 
 // stockage des valeurs envoyés via USART
-volatile unsigned char heurestemp[3];
+volatile uint8_t heurestemp[4];
 volatile uint8_t compteur=0;
+
+// mode d'affichage mode0 = aiguilles mode1=chiffres tordus mode2 : chiffres droits
+volatile uint8_t mode = 0;
 
 void miseAJourHeure(uint8_t heure)
 {
@@ -48,78 +51,54 @@ void miseAJourSec(uint8_t sec)
 ISR(USART0_RX_vect)
 {
   unsigned char data;
-  //Read the received data 
+  //Read the received data
   data = UDR0;
   // on doit envoyer sur l'USART : XXXXXX ou X : chiffre
-  
-  if((data=='h' && compteur==0)||compteur>0)
+
+  if((data=='h' && compteur==0))
   {
-    heurestemp[compteur]=data;
-    //char buffer[16];
-    //sprintf(buffer,"%i \n\r",(uint8_t)atoi(*heurestemp[compteur]));
-    //USART_puts(buffer);
     compteur++;
-    if(compteur==3)
-    {
-      USART_Transmit('f');
-      compteur=0;
-      miseAJourHeure((uint8_t)heurestemp[1]*10+(uint8_t)heurestemp[2]);
-    }
   }
+	//on recoit les dixaines des heures
+	else if(compteur==1){
+		compteur++;
+		heurestemp[0]=data-48;//convertie char en int depuis code ASCII
+	}
+	//on recoit les unites des heures
+	else if(compteur==2){
+		compteur++;
+		heurestemp[1]=data-48;
+	}
+	//on recoit les dixaines des minutes
+	else if(compteur==3){
+		compteur++;
+		heurestemp[2]=data-48;
+	}
+	//on recoit les unites des minutes
+	else if(compteur==4){
+		compteur=0;
+		heurestemp[3]=data-48;
+		//met a jour l'heure
+		compteur_h=heurestemp[0]*10+heurestemp[1];
+		compteur_min=heurestemp[2]*10+heurestemp[3];
+	}
+//mode aiguille
+else if (data=='a')
+{
+mode=0;
+}
+//mode chiffre tordu
+else if (data=='c')
+{
+mode=1;
+}
+//mode chiffre droit
+else if(data=='d')
+{
+mode=2;
+}
 }
 
-//mode d'affichage aiguille
-void aiguilles(void){
-  uint8_t heure12;
-  while(1)
-  {
-    if(compteur_h>=12){
-      heure12=compteur_h-12;
-    }
-    else{
-      heure12=compteur_h;
-    }
-    //sec min pas h
-    if(numero_cadran==compteur_sec && numero_cadran==compteur_min)// &&  numero_cadran/5!=heure12)
-    {
-       allumeLed(49151);
-    }
-    //sec min h
-    else if(numero_cadran==compteur_sec && numero_cadran==compteur_min &&  numero_cadran/5==heure12 && numero_cadran%5==0)
-    {
-       allumeLed(48895);
-    }
-    //sec pas min pas h
-    else if (numero_cadran==compteur_sec && numero_cadran!=compteur_min)//&& numero_cadran/5!=heure12)
-    {
-      allumeLed(32768);
-    }
-    //sec pas min h
-    else if (numero_cadran==compteur_sec && numero_cadran!=compteur_min && numero_cadran/5==heure12 &&  numero_cadran%5==0)
-    {
-      allumeLed(33023);
-    }
-    //pas sec min pas h
-    else if(numero_cadran!=compteur_sec && numero_cadran==compteur_min)// && numero_cadran/5!=heure12)
-    {
-      allumeLed(16383);
-    }
-    //pas sec min h
-    else if(numero_cadran!=compteur_sec && numero_cadran==compteur_min && numero_cadran/5==heure12 &&  numero_cadran%5==0)
-    {
-      allumeLed(16127);
-    }
-    //pas sec pas min h
-    else if(numero_cadran!=compteur_sec && numero_cadran!=compteur_min && numero_cadran/5==heure12 &&  numero_cadran%5==0)
-    {
-      allumeLed(255);
-    }
-    else
-    {
-       allumeLed(0);
-    }
-  }
-}
 
 // TIMER0 overflow interrupt service routine
 // called whenever TCNT0 overflows
@@ -180,11 +159,10 @@ ISR(INT0_vect)
   OCR3AH = (vitesse2>>8);
   OCR3AL = vitesse2;
   numero_cadran=30;
-  
+
   time1=time2;
   time2=TCNT1;
   int16_t difference=time2-time1;
-  //char buffer[16];
   if(difference>0)
   {
     vitesse = (vitesse+time2-time1)/2;
@@ -207,21 +185,26 @@ int main() {
 
   InitTimer1(compteur_timer);
   InitTimer3(vitesse);
-  //volatile uint16_t i=1;
+
   USART_Transmit('g');
 
-  // Mode aiguilles activé
-  //aiguilles();
-  
-  /* while(1)
-  {
-    AfficheHeures(compteur_h,compteur_sec,numero_cadran);
-    AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
-    }*/
-  while(1)
-    {
-      afficheHeure(numero_cadran, compteur_h, compteur_min);    
-      }
+	while(1){
+		if(mode==0)
+		{
+		// Mode 0 : Aiguilles
+		 aiguilles(numero_cadran,compteur_h,compteur_min,compteur_sec);
+		}
+		else if(mode==1)
+		{
+		// Mode 1 : Chiffres tordus
+
+		    AfficheHeures(compteur_h,compteur_sec,numero_cadran);
+		    AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
+		    
+		}
+		else if (mode==2){
+		  // Mode 2 : chiffres droits
+		      afficheHeure(numero_cadran, compteur_h, compteur_min,compteur_sec);
+		}
+	}
 }
-
-

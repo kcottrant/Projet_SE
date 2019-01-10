@@ -1,4 +1,4 @@
-#include "display.h"
+#include "timers.h"
 
 // timer 16 bit
 void InitTimer1(uint8_t compteur_timer)
