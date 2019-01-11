@@ -12,7 +12,7 @@
 //de gauche a droite se trouve la position des leds du plus proche du centre au plus eloigne du centre
 //tabPosy[ligne][colonne]
 //pour avoir les positions en x il suffis de lire le tableau de bas en haut car Sin(pi/2-theta)=cos(theta)
-uint16_t tabPosy [16][16]={{135,185,235,285,335,385,435,485,535,585,635,685,735,785,835,885},			   {134,184,234,283,333,383,433,482,532,582,632,681,731,781,830,880},			   {132,181,230,279,328,377,425,474,523,572,621,670,719,768,817,866},			   {128,176,223,271,319,366,414,461,509,556,604,651,699,747,794,842},			   {123,169,215,260,306,352,397,443,489,534,580,626,671,717,763,808},			   {117,160,204,247,290,333,377,420,463,507,550,593,637,680,723,766},			   {109,150,190,231,271,311,352,392,433,473,514,554,595,635,676,716},			   {100,137,175,212,249,286,323,360,398,435,472,509,546,583,621,658},			   {90,124,157,191,224,258,291,325,358,391,425,458,492,525,559,592},			   {79,109,138,168,197,226,256,285,314,344,373,403,432,461,491,520},			   {68,93,118,143,168,193,218,243,268,293,318,343,368,393,418,443},			   {55,75,96,116,136,157,177,197,218,238,258,279,299,319,340,360},			   {42,57,73,88,104,119,134,150,165,181,196,212,227,243,258,273},	
+uint16_t tabPosy [16][16]={{135,185,235,285,335,385,435,485,535,585,635,685,735,785,835,885},			   {134,184,234,283,333,383,433,482,532,582,632,681,731,781,830,880},			   {132,181,230,279,328,377,425,474,523,572,621,670,719,768,817,866},			   {128,176,223,271,319,366,414,461,509,556,604,651,699,747,794,842},			   {123,169,215,260,306,352,397,443,489,534,580,626,671,717,763,808},			   {117,160,204,247,290,333,377,420,463,507,550,593,637,680,723,766},			   {109,150,190,231,271,311,352,392,433,473,514,554,595,635,676,716},			   {100,137,175,212,249,286,323,360,398,435,472,509,546,583,621,658},			   {90,124,157,191,224,258,291,325,358,391,425,458,492,525,559,592},			   {79,109,138,168,197,226,256,285,314,344,373,403,432,461,491,520},			   {68,93,118,143,168,193,218,243,268,293,318,343,368,393,418,443},			   {55,75,96,116,136,157,177,197,218,238,258,279,299,319,340,360},			   {42,57,73,88,104,119,134,150,165,181,196,212,227,243,258,273},
 {28,38,49,59,70,80,90,101,111,122,132,142,153,163,174,184},
 {14,19,25,30,35,40,45,51,56,61,66,72,77,82,87,93},
 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -124,12 +124,12 @@ void chiffre(uint8_t chiffre,uint8_t quart)
   int *ptaba = ptabaSauvegarde;
   int *ptabb = ptabbSauvegarde;
   uint8_t *pcoeffEstNull = pcoeffEstNullSauvegarde;
-  
+
   uint8_t tailleTableau;
   tailleTableau = miseAZeroPointeurs(chiffre,ptaba, ptabb, pcoeffEstNull,ptabaSauvegarde,ptabbSauvegarde,pcoeffEstNullSauvegarde);
 
   uint8_t tempsLed[16];
-  
+
   if(quart==0)
     {
       calculDroites(pchiffrex1,pchiffrex2, pchiffrey1,pchiffrey2,pcoeffEstNull, ptaba, ptabb,tailleTableau,0,0);
@@ -229,7 +229,7 @@ uint8_t calculLedAllume(int *taba,int *tabb, uint16_t posLedx, uint16_t posLedy,
 	  plusGrandx=*tabchiffrex2-moinsX;
 	  plusPetitx=*tabchiffrex1-moinsX;
 	}
-      
+
       //si le coeff de la droite est nul (la droite est verticale)
       if(*estNull==1){
 	if(*tabb==posLedx && posLedy<=plusGrandy && posLedy>=plusPetity )
@@ -277,14 +277,14 @@ uint8_t miseAZeroPointeurs(uint8_t chiffre,int *ptaba, int *ptabb, uint8_t * pco
   pcoeffEstNull = pcoeffEstNullSauv;
 
   uint8_t taille=0;
-  
+
   if(chiffre==1)
     {
       pchiffrex1 = &tabchiffre1x[0];
       pchiffrey1 = &tabchiffre1y[0];
       pchiffrex2 = &tabchiffre1x[1];
       pchiffrey2 = &tabchiffre1y[1];
-      
+
       taille = 11;
     }
   else if(chiffre==2)
@@ -388,10 +388,10 @@ uint16_t convertToDecimal(uint8_t tabled[16])
 void calculDroites(int16_t *pchiffrex1,int16_t *pchiffrex2,int16_t *pchiffrey1,int16_t *pchiffrey2,uint8_t *pCoeffNull, int *ptaba, int *ptabb, uint8_t tailleTabDroite, uint16_t moinsX, uint16_t moinsY)
 {
   for(int i=0;i<tailleTabDroite;i++)
-    {	
+    {
       *ptaba = calculCoeffDirect(*pchiffrex1-moinsX,*pchiffrex2-moinsX,*pchiffrey1-moinsY,*pchiffrey2-moinsY,pCoeffNull);
       *ptabb = calculOrdonOrigin(*pchiffrex1-moinsX,*pchiffrey1-moinsY,*ptaba, pCoeffNull);
-         
+
       pCoeffNull++;
       ptaba++;
       ptabb++;
@@ -432,7 +432,3 @@ int calculOrdonOrigin(int16_t x,int16_t y,int a,uint8_t *estNull)
   }
   return b;
 }
-
-
-
-

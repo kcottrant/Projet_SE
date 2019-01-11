@@ -16,8 +16,8 @@
 volatile uint8_t compteur_timer; // compte le nombre d'overflow du timer 1, au bout de 5, une seconde s'est écoulee
 
 //compteurs pour l'heure qu'il est
-volatile uint8_t compteur_h=03;
-volatile uint8_t compteur_min=45;
+volatile uint8_t compteur_h=11;
+volatile uint8_t compteur_min=10;
 volatile uint8_t compteur_sec=0;
 
 volatile uint16_t vitesse=0; // vitesse moyenne de rotation
@@ -59,55 +59,55 @@ ISR(USART0_RX_vect)
   {
     compteur++;
   }
-	//on recoit les dixaines des heures
-	else if(compteur==1){
-		compteur++;
-		heurestemp[0]=data-48;//convertie char en int depuis code ASCII
-	}
-	//on recoit les unites des heures
-	else if(compteur==2){
-		compteur++;
-		heurestemp[1]=data-48;
-	}
-	//on recoit les dixaines des minutes
-	else if(compteur==3){
-		compteur++;
-		heurestemp[2]=data-48;
-	}
-	//on recoit les unites des minutes
-	else if(compteur==4){
-		compteur=0;
-		heurestemp[3]=data-48;
-		//met a jour l'heure
-		compteur_h=heurestemp[0]*10+heurestemp[1];
-		compteur_min=heurestemp[2]*10+heurestemp[3];
-	}
-//mode aiguille
-else if (data=='a')
-{
-mode=0;
-}
-//mode chiffre tordu
-else if (data=='c')
-{
-mode=1;
-}
-//mode chiffre droit
-else if(data=='d')
-{
-mode=2;
-}
+  //on recoit les dixaines des heures
+  else if(compteur==1){
+    compteur++;
+    heurestemp[0]=data-48;//convertie char en int depuis code ASCII
+  }
+  //on recoit les unites des heures
+  else if(compteur==2){
+    compteur++;
+    heurestemp[1]=data-48;
+  }
+  //on recoit les dixaines des minutes
+  else if(compteur==3){
+    compteur++;
+    heurestemp[2]=data-48;
+  }
+  //on recoit les unites des minutes
+  else if(compteur==4){
+    compteur=0;
+    heurestemp[3]=data-48;
+    //met a jour l'heure
+    compteur_h=heurestemp[0]*10+heurestemp[1];
+    compteur_min=heurestemp[2]*10+heurestemp[3];
+  }
+  //mode aiguille
+  else if (data=='a')
+  {
+    mode=0;
+  }
+  //mode chiffre tordu
+  else if (data=='c')
+  {
+    mode=1;
+  }
+  //mode chiffre droit
+  else if(data=='d')
+  {
+    mode=2;
+  }
 }
 
 
-// TIMER0 overflow interrupt service routine
+// TIMER1 overflow interrupt service routine
 // called whenever TCNT0 overflows
 // se produit 5 fois par seconde
 // met a jour l'heure
 ISR(TIMER1_COMPA_vect)
 {
-   compteur_timer ++;
-    // keep a track of number of overflows
+  compteur_timer ++;
+  // keep a track of number of overflows
   if(compteur_timer==5)
   {
     compteur_timer=0;
@@ -188,23 +188,23 @@ int main() {
 
   USART_Transmit('g');
 
-	while(1){
-		if(mode==0)
-		{
-		// Mode 0 : Aiguilles
-		 aiguilles(numero_cadran,compteur_h,compteur_min,compteur_sec);
-		}
-		else if(mode==1)
-		{
-		// Mode 1 : Chiffres tordus
+  while(1){
+    if(mode==0)
+    {
+      // Mode 0 : Aiguilles
+      aiguilles(numero_cadran,compteur_h,compteur_min,compteur_sec);
+    }
+    else if(mode==1)
+    {
+      // Mode 1 : Chiffres tordus
 
-		    AfficheHeures(compteur_h,compteur_sec,numero_cadran);
-		    AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
-		    
-		}
-		else if (mode==2){
-		  // Mode 2 : chiffres droits
-		      afficheHeure(numero_cadran, compteur_h, compteur_min,compteur_sec);
-		}
-	}
+      AfficheHeures(compteur_h,compteur_sec,numero_cadran);
+      AfficheMinutes(compteur_min,compteur_sec,numero_cadran);
+
+    }
+    else if (mode==2){
+      // Mode 2 : chiffres droits
+      afficheHeure(numero_cadran, compteur_h, compteur_min,compteur_sec);
+    }
+  }
 }

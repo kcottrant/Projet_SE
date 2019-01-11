@@ -10,7 +10,7 @@ void USART_Init( unsigned int ubrr )
   /* Enable receiver and transmitter */
   // enable interrupt USART sur RXCIE0
   UCSR0B = (1<<RXEN)|(1<<TXEN)|(1<<RXCIE0);
-  
+
   /* Set frame format: 8data, 2stop bit */
   UCSR0C = (1<<UCSZ00)|(1<<UCSZ01);
 }
@@ -28,7 +28,7 @@ void USART_Transmit( unsigned char data )
 
 }
 
-// Permet d'envoyer plusieurs char à la fois 
+// Permet d'envoyer plusieurs char à la fois
 void USART_puts(unsigned char *data)
 {
     int k = 0;

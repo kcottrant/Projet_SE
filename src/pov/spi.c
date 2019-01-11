@@ -28,7 +28,7 @@ void allumeLed(uint16_t chiffre)
   uint8_t trame2 = chiffre;
   PORTE |= _BV(PE4);
   PORTE &=~ _BV(PE5);
-  
+
   SPI_MasterTransmit(trame1);
   SPI_MasterTransmit(trame2);
   PORTE |= _BV(PE5);
